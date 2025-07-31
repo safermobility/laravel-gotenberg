@@ -45,6 +45,8 @@ class PdfBuilder implements Responsable
 
     public ?array $margins = null;
 
+    public ?float $scale = null;
+
     protected string $visibility = 'private';
 
     protected ?Closure $customizeRequest = null;
@@ -176,9 +178,7 @@ class PdfBuilder implements Responsable
         float $left = 0,
         Unit|string $unit = 'in'
     ): self {
-        if (! $unit instanceof Unit) {
-            $unit = Unit::from($unit);
-        }
+        $unit = $this->getUnitValue($unit);
 
         $this->margins = compact(
             'top',
@@ -187,6 +187,13 @@ class PdfBuilder implements Responsable
             'left',
             'unit',
         );
+
+        return $this;
+    }
+
+    public function scale(float $scale): self
+    {
+        $this->scale = $scale;
 
         return $this;
     }
@@ -204,9 +211,7 @@ class PdfBuilder implements Responsable
 
     public function paperSize(float $width, float $height, Unit|string $unit = 'in'): self
     {
-        if ($unit instanceof Unit) {
-            $unit = $unit->value;
-        }
+        $unit = $this->getUnitValue($unit);
 
         $this->paperSize = compact(
             'width',
@@ -215,6 +220,15 @@ class PdfBuilder implements Responsable
         );
 
         return $this;
+    }
+
+    protected function getUnitValue(Unit|string $unit): string
+    {
+        if (! $unit instanceof Unit) {
+            $unit = Unit::from($unit);
+        }
+
+        return $unit->value;
     }
 
     public function customize(callable $callback): self
@@ -355,6 +369,9 @@ class PdfBuilder implements Responsable
         }
 
         $postData['landscape'] = $this->orientation === Orientation::Landscape->value;
+        if ($this->scale) {
+            $postData['scale'] = $this->scale;
+        }
 
         $request->attach('index', $this->getHtml(), 'index.html');
 
