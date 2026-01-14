@@ -2,6 +2,17 @@
 
 All notable changes to `laravel-gotenberg` will be documented in this file.
 
+## v1.0.3 - 2026-01-14
+
+### What's Changed
+
+* Fix saving the PDF to the local filesystem
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/safermobility/laravel-gotenberg/pull/8
+* Bump stefanzweifel/git-auto-commit-action from 6 to 7 by @dependabot[bot] in https://github.com/safermobility/laravel-gotenberg/pull/9
+* Bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/safermobility/laravel-gotenberg/pull/11
+
+**Full Changelog**: https://github.com/safermobility/laravel-gotenberg/compare/v1.0.2...v1.0.3
+
 ## v1.0.2 - 2025-08-04
 
 ### What's Changed
