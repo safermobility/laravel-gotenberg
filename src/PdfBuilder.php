@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use SaferMobility\LaravelGotenberg\Enums\Format;
 use SaferMobility\LaravelGotenberg\Enums\Orientation;
 use SaferMobility\LaravelGotenberg\Enums\Unit;
-use SaferMobility\LaravelGotenberg\Exceptions\NativeFunctionErrored;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PdfBuilder implements Responsable
@@ -245,30 +244,23 @@ class PdfBuilder implements Responsable
         return $this;
     }
 
+    /**
+     * Generate the PDF file and save it to the provided path.
+     *
+     * If a disk name has been previously provided, the path will
+     * be relative to the Laravel Filesystem configuration for that disk.
+     * Otherwise, the path will be on the local system disk.
+     *
+     * IMPORTANT: if saving locally, you are responsible for making sure the
+     * provided file path is safe. DO NOT TRUST USER INPUT for the file path!
+     */
     public function save(string $path): self
     {
         if ($this->diskName) {
             return $this->saveOnDisk($this->diskName, $path);
         }
 
-        $response = $this->doRequest()->getBody();
-
-        $file = fopen($path, 'w');
-        if ($file === false) {
-            throw NativeFunctionErrored::createFromLastPhpError();
-        }
-
-        // Streaming for large files, instead of loading the whole thing into memory
-        while (! feof($response)) {
-            $chunk = fread($response, 1024 * 512); // read up to 0.5 MiB at a time
-            if (fwrite($file, $chunk) === false) {
-                throw NativeFunctionErrored::createFromLastPhpError();
-            }
-        }
-        fclose($response);
-        if (fclose($file) === false) {
-            throw NativeFunctionErrored::createFromLastPhpError();
-        }
+        $this->doRequest($path);
 
         return $this;
     }
@@ -281,6 +273,9 @@ class PdfBuilder implements Responsable
         return $this;
     }
 
+    /**
+     * Build the PDF and save the result on the provided Laravel Filesystem at the provided path
+     */
     protected function saveOnDisk(string $diskName, string $path): self
     {
         $content = $this->doRequest()->getBody();
@@ -340,7 +335,7 @@ class PdfBuilder implements Responsable
         ]);
     }
 
-    public function doRequest(): Response
+    public function doRequest(?string $localSavePath = null): Response
     {
         $request = Http::baseUrl(config('gotenberg.host'));
 
@@ -377,6 +372,11 @@ class PdfBuilder implements Responsable
 
         if ($this->customizeRequest) {
             ($this->customizeRequest)($request);
+        }
+
+        // Use the HTTP Client's built-in file-saving, if saving to the local filesystem is desired
+        if ($localSavePath) {
+            $request->sink($localSavePath);
         }
 
         return $request->post(static::ENDPOINT_URL, $postData);
