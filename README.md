@@ -1,5 +1,13 @@
 # Create PDFs in Laravel apps using Gotenberg
 
+## IMPORTANT!
+
+**This package is no longer maintained, because [`spatie/laravel-pdf`](https://github.com/spatie/laravel-pdf) now has support for Gotenberg in 2.1+.**
+
+---
+
+## Overview
+
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/safermobility/laravel-gotenberg.svg?style=flat-square)](https://packagist.org/packages/safermobility/laravel-gotenberg)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/safermobility/laravel-gotenberg/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/safermobility/laravel-gotenberg/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/safermobility/laravel-gotenberg/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/safermobility/laravel-gotenberg/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
